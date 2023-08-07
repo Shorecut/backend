@@ -29,6 +29,7 @@ $axios.interceptors.response.use(
         return $axios(config);
       }
     }
+    return Promise.reject(error);
   }
 );
 
@@ -36,10 +37,9 @@ async function refreshAccessToken() {
   try {
     const tokens = JSON.parse(localStorage.getItem("tokens"));
     if (tokens) {
-      const { data } = await axios.post(`${BASE_URL}/account/token/refresh/`, {
+      const { data } = await axios.post(`${BASE_URL}/account/refresh/`, {
         refresh: tokens.refresh,
       });
-      console.log(data);
       localStorage.setItem(
         "tokens",
         JSON.stringify({
@@ -53,7 +53,5 @@ async function refreshAccessToken() {
     localStorage.removeItem("tokens");
   }
 }
-
-refreshAccessToken();
 
 export default $axios;

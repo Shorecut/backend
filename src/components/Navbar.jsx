@@ -13,13 +13,23 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useAuthContext } from "../contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import LiveSearch from "./LiveSearch";
 
-const pages = ["Products", "Pricing", "Blog"];
+const pages = [
+  {
+    title: "Add Product",
+    href: "/add",
+  },
+];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
   const { user, logout } = useAuthContext();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -46,8 +56,7 @@ function Navbar() {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
+            onClick={() => location.pathname !== "/" && navigate("/")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -56,6 +65,7 @@ function Navbar() {
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
+              cursor: "pointer",
             }}
           >
             LOGO
@@ -91,8 +101,13 @@ function Navbar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem
+                  component={Link}
+                  to={page.href}
+                  key={page.title}
+                  onClick={handleCloseNavMenu}
+                >
+                  <Typography textAlign="center">{page.title}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -101,8 +116,7 @@ function Navbar() {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href=""
+            onClick={() => location.pathname !== "/" && navigate("/")}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -112,6 +126,7 @@ function Navbar() {
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
+              cursor: "pointer",
             }}
           >
             LOGO
@@ -119,20 +134,26 @@ function Navbar() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                component={Link}
+                to={page.href}
+                key={page.title}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.title}
               </Button>
             ))}
           </Box>
+
+          {location.pathname === "/" && <LiveSearch />}
 
           <Box sx={{ flexGrow: 0 }}>
             {user ? (
               <Box display="flex" alignItems="center" gap={1}>
                 <Typography>{user.email}</Typography>
-                <Button sx={{ color: "white" }}>LogOut</Button>
+                <Button onClick={logout} sx={{ color: "white" }}>
+                  LogOut
+                </Button>
               </Box>
             ) : (
               <Button component={Link} to="/auth" sx={{ color: "white" }}>
